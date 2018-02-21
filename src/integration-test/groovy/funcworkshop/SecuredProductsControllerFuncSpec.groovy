@@ -1,5 +1,8 @@
 package funcworkshop
 
+import com.mysecurerest.Authority
+import com.mysecurerest.User
+import com.mysecurerest.UserAuthority
 import grails.plugins.rest.client.RestBuilder
 import grails.testing.mixin.integration.Integration
 import grails.transaction.Rollback
@@ -10,6 +13,9 @@ import spock.lang.Specification
 @Integration
 @Rollback
 class SecuredProductsControllerFuncSpec extends Specification {
+
+    public static final String username = "username"
+    public static final String password = "password"
 
     @Value('${local.server.port}')
     Integer port
@@ -22,6 +28,9 @@ class SecuredProductsControllerFuncSpec extends Specification {
     }
 
     def setup() {
+        def role1 = new Authority(authority:"ROLE_USER").save flush:true
+        def user1 = new User(username: username, password: password).save flush:true
+        UserAuthority.create(user1,role1).save(flush: true)
     }
 
     def cleanup() {
@@ -30,15 +39,44 @@ class SecuredProductsControllerFuncSpec extends Specification {
         }
     }
 
+    def "It can't get the products without giving a token"() {
+        when: 'getting the products from the api'
+        def response = restBuilder.get baseUrl + '/secured/products'
+
+        then: 'it is forbidden'
+        response.status == 403
+    }
+
+    def "It can't get the products when giving a wrong token"() {
+        when: 'getting the products from the api'
+        def response = restBuilder.get baseUrl + '/secured/products', {
+            header 'X-Auth-Token', 'some invalid token'
+        }
+
+        then: 'it is unauthorized'
+        response.status == 401
+    }
+
     def "It can get existing products"() {
-        given: 'two products'
+        given: 'a session'
+        def loginResponse = restBuilder.post baseUrl + '/api/login', {
+            json([
+                    username: username,
+                    password: password
+            ])
+        }
+        String accessToken = loginResponse.json.access_token
+
+        and: 'two products'
         Product.withNewSession {
             new Product(name: 'product1', price: 10).save(flush: true, failOnError: true)
             new Product(name: 'product2', price: 20).save(flush: true, failOnError: true)
         }
 
         when: 'getting the products from the api'
-        def response = restBuilder.get baseUrl + '/secured/products'
+        def response = restBuilder.get baseUrl + '/secured/products', {
+            header 'X-Auth-Token', accessToken
+        }
 
         then: 'it returns a OK status code'
         response.status == 200
@@ -63,8 +101,19 @@ class SecuredProductsControllerFuncSpec extends Specification {
     }
 
     def "It can't get results if there is none in database"() {
+        given: 'a session'
+        def loginResponse = restBuilder.post baseUrl + '/api/login', {
+            json([
+                    username: username,
+                    password: password
+            ])
+        }
+        String accessToken = loginResponse.json.access_token
+
         when: 'getting the products from the api'
-        def response = restBuilder.get baseUrl + '/secured/products'
+        def response = restBuilder.get baseUrl + '/secured/products', {
+            header 'X-Auth-Token', accessToken
+        }
 
         then: 'it returns a OK status code'
         response.status == 200
@@ -75,14 +124,25 @@ class SecuredProductsControllerFuncSpec extends Specification {
     }
 
     def "It can get an existing product"() {
-        given: 'a product'
+        given: 'a session'
+        def loginResponse = restBuilder.post baseUrl + '/api/login', {
+            json([
+                    username: username,
+                    password: password
+            ])
+        }
+        String accessToken = loginResponse.json.access_token
+
+        and: 'a product'
         def product = new Product(name: 'product', price: 10)
         Product.withNewSession {
             product.save(flush: true, failOnError: true)
         }
 
         when: 'getting the product from the api'
-        def response = restBuilder.get baseUrl + "/secured/products/${product.id}"
+        def response = restBuilder.get baseUrl + "/secured/products/${product.id}", {
+            header 'X-Auth-Token', accessToken
+        }
 
         then: 'it returns a OK status code'
         response.status == 200
@@ -94,14 +154,34 @@ class SecuredProductsControllerFuncSpec extends Specification {
     }
 
     def "It can't get a non-existing product"() {
+        given: 'a session'
+        def loginResponse = restBuilder.post baseUrl + '/api/login', {
+            json([
+                    username: username,
+                    password: password
+            ])
+        }
+        String accessToken = loginResponse.json.access_token
+
         when: 'getting the product from the api'
-        def response = restBuilder.get baseUrl + "/secured/products/1234"
+        def response = restBuilder.get baseUrl + "/secured/products/1234", {
+            header 'X-Auth-Token', accessToken
+        }
 
         then: 'it doesn\'t return a OK status code'
         response.status == 404
     }
 
     def "It should create a product successfully"() {
+        given: 'a session'
+        def loginResponse = restBuilder.post baseUrl + '/api/login', {
+            json([
+                    username: username,
+                    password: password
+            ])
+        }
+        String accessToken = loginResponse.json.access_token
+
         expect:
         Product.withNewSession {
             !Product.findByName(name)
@@ -109,6 +189,7 @@ class SecuredProductsControllerFuncSpec extends Specification {
 
         when:
         def response = restBuilder.post baseUrl + '/secured/products', {
+            header 'X-Auth-Token', accessToken
             json([
                     name: name,
                     price: price
@@ -129,6 +210,15 @@ class SecuredProductsControllerFuncSpec extends Specification {
     }
 
     def "It shouldn't create a product giving wrong arguments"() {
+        given: 'a session'
+        def loginResponse = restBuilder.post baseUrl + '/api/login', {
+            json([
+                    username: username,
+                    password: password
+            ])
+        }
+        String accessToken = loginResponse.json.access_token
+
         expect:
         Product.withNewSession {
             !Product.findByName(name)
@@ -136,6 +226,7 @@ class SecuredProductsControllerFuncSpec extends Specification {
 
         when:
         def response = restBuilder.post baseUrl + '/secured/products', {
+            header 'X-Auth-Token', accessToken
             json([
                     name: name,
                     price: price
@@ -156,6 +247,15 @@ class SecuredProductsControllerFuncSpec extends Specification {
     }
 
     def "It should update a product"() {
+        given: 'a session'
+        def loginResponse = restBuilder.post baseUrl + '/api/login', {
+            json([
+                    username: username,
+                    password: password
+            ])
+        }
+        String accessToken = loginResponse.json.access_token
+
         expect:
         def product = new Product(name: name, price: 10)
         Product.withNewSession {
@@ -164,6 +264,7 @@ class SecuredProductsControllerFuncSpec extends Specification {
 
         when:
         def response = restBuilder.put baseUrl + '/secured/products/' + product.id, {
+            header 'X-Auth-Token', accessToken
             json([
                     name: newName,
                     price: price
@@ -188,6 +289,15 @@ class SecuredProductsControllerFuncSpec extends Specification {
     }
 
     def "It shouldn't update a product giving wrong arguments"() {
+        given: 'a session'
+        def loginResponse = restBuilder.post baseUrl + '/api/login', {
+            json([
+                    username: username,
+                    password: password
+            ])
+        }
+        String accessToken = loginResponse.json.access_token
+
         expect:
         def product = new Product(name: name, price: 10)
         Product.withNewSession {
@@ -196,6 +306,7 @@ class SecuredProductsControllerFuncSpec extends Specification {
 
         when:
         def response = restBuilder.put baseUrl + '/secured/products/' + product.id, {
+            header 'X-Auth-Token', accessToken
             json([
                     name: '',
                     price: price
@@ -216,6 +327,15 @@ class SecuredProductsControllerFuncSpec extends Specification {
     }
 
     def "It can delete a product"() {
+        given: 'a session'
+        def loginResponse = restBuilder.post baseUrl + '/api/login', {
+            json([
+                    username: username,
+                    password: password
+            ])
+        }
+        String accessToken = loginResponse.json.access_token
+
         expect:
         def product = new Product(name: name, price: 10)
         Product.withNewSession {
@@ -223,7 +343,9 @@ class SecuredProductsControllerFuncSpec extends Specification {
         }
 
         when:
-        def response = restBuilder.delete baseUrl + '/secured/products/' + product.id
+        def response = restBuilder.delete baseUrl + '/secured/products/' + product.id, {
+            header 'X-Auth-Token', accessToken
+        }
 
         then:
         response.status == 204

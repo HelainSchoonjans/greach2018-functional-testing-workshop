@@ -1,3 +1,3 @@
 = The Greach 2018 functional testing workshop
 Hélain Schoonjans <helain.schoonjans@outlook.com>
-v1.2, 2018-02-19
+v1.3, 2018-02-19

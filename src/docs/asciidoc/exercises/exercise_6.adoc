@@ -1,0 +1,102 @@
+include::../header.adoc[]
+
+== Testing a secured API
+
+Most of real world applications will implement some kind of security.
+
+Secured endpoints can be tested like any other ones, but will require additional setup to create the users, roles and obtain a session token to provide to our rest client.
+
+
+TODO continue
+
+== The secured product API
+
+A secured implementation of the products API exists on the /secured/products endpoints.
+
+It works as the regular products API:
+
+=== Index
+
+[cols="h,5a"]
+|===
+| URL
+| /secured/products
+
+| Method
+| GET
+
+| Status
+| 200
+
+| Response Body
+| include::../snippets/products/index.json.adoc[]
+|===
+
+=== Show
+
+[cols="h,5a"]
+|===
+| URL
+| /secured/products/[productId]
+
+| Method
+| GET
+
+| Status
+| 200
+
+| Response Body
+| include::../snippets/products/show.json.adoc[]
+|===
+
+=== Save
+
+[cols="h,5a"]
+|===
+| URL
+| /secured/products
+
+| Method
+| POST
+
+| Status
+| 201
+
+| Request Body
+| include::../snippets/products/save.json.adoc[]
+|===
+
+=== Update
+
+[cols="h,5a"]
+|===
+| URL
+| /secured/products/[productId]
+
+| Method
+| PUT
+
+| Status
+| 201
+
+| Request Body
+| include::../snippets/products/update.json.adoc[]
+|===
+
+=== Delete
+
+[cols="h,5a"]
+|===
+| URL
+| /secured/products/[productId]
+
+| Method
+| DELETE
+
+| Status
+| 201
+|===
+
+
+== Exercise 6
+
