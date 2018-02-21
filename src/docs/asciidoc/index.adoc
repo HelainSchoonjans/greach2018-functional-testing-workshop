@@ -1,0 +1,29 @@
+include::header.adoc[]
+
+== Introduction
+
+=== Testing
+
+Being human, we developers make errors. Bugs can make you lose time, create security issues and sometimes other problems with dramatic consequences for the users and clients.
+
+Automated testing is the practice of writing code that will verify some properties of your code, to help you notice defects during development.
+
+=== Unit testing
+
+Unit tests are the simplest type of test. A unit test usually only test one function or method to ensure it behaves well in isolation. They usually are fast since they don't require the setup of a full application.
+
+Unit testing a Grails application does not require to run a Grails environment.
+
+=== Integration testing
+
+Integration tests on the contrary focus on testing components in a fully assembled environment.
+
+A Grails integration test will setup a Grails environment.
+
+=== Functional testing
+
+Functional testing is a type of black-box testing. While the Integration tests interact directly with the components of the application under test, functional tests will test the full slice of functionality from the outside without taking into account the project structure ( ideally! ).
+
+To test functionally a REST API, you use a REST client to interact with the API and making assertions on the response of the application.
+
+link:api.html[The API]

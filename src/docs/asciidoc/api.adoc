@@ -1,0 +1,114 @@
+include::header.adoc[]
+
+== The API.
+
+Our application is a retail store, containing products along with their name and price. It exposes a simple REST API:
+
+=== Product
+
+Products can be read, created, updated and deleted by any user. A product ID is used to identify the product.
+
+==== Index
+
+[cols="h,5a"]
+|===
+| URL
+| /products
+
+| Method
+| GET
+
+| Status
+| 200
+
+| Response Body
+| include::snippets/products/index.json.adoc[]
+|===
+
+==== Show
+
+[cols="h,5a"]
+|===
+| URL
+| /products/[productId]
+
+| Method
+| GET
+
+| Status
+| 200
+
+| Response Body
+| include::snippets/products/show.json.adoc[]
+|===
+
+==== Save
+
+[cols="h,5a"]
+|===
+| URL
+| /products
+
+| Method
+| POST
+
+| Status
+| 201
+
+| Request Body
+| include::snippets/products/save.json.adoc[]
+|===
+
+==== Update
+
+[cols="h,5a"]
+|===
+| URL
+| /products/[productId]
+
+| Method
+| PUT
+
+| Status
+| 201
+
+| Request Body
+| include::snippets/products/update.json.adoc[]
+|===
+
+==== Delete
+
+[cols="h,5a"]
+|===
+| URL
+| /products/[productId]
+
+| Method
+| DELETE
+
+| Status
+| 201
+|===
+
+=== Notification
+
+Notifications can be sent when the only endpoint /notifications is called.
+
+==== Index
+
+[cols="h,5a"]
+|===
+| URL
+| /notification
+
+| Method
+| GET
+
+| Status
+| 200
+
+| Response Body
+| include::snippets/notifications/index.json.adoc[]
+|===
+
+link:exercises.html[Exercises]

@@ -1,0 +1,42 @@
+include::../header.adoc[]
+
+== Side effects
+
+When an endpoints makes editions in the database, looking at the content of the response might not tell if the code behaved well.
+
+It is however possible to load domains from the database and ensure they have been created/updated/deleted as expected.
+
+Example:
+
+[source,groovy]
+----
+    def "It can create a potato"() {
+        expect: 'no potato in database'
+        Product.withNewSession {
+            Potato.list()
+        }
+
+        when: 'creates a potato using the API'
+        def response = restBuilder.post baseUrl + '/products', {
+            json([name: 'just another potato'])
+        }
+
+        then: 'it returns a CREATED status code'
+        response.status == 201
+
+        and: 'the potato now exists in database'
+        Potato.withNewSession {
+            Potato.findByName('just another potato')
+        }
+    }
+----
+
+== Exercise 4
+
+- Create a test that will create a product using the API and ensure it exists in the database
+- Create a test that will try to create a product but gives the wrong arguments in the request body. Ensure it does not give a 200 status and that no Product is created.
+- Create a test that will call the put method of the API, giving new values to the name and price fields of an existing Project. Ensure it works and the project is updated in database.
+- Create a test that will try to update a product, fail because of wrong arguments. Ensure the status is not 200 and the Product is not updated.
+- Create a test that will delete an existing Product. Ensure the status is 204 and the Product is not in database anymore after the rest call.
+
+link:exercise_5.html[Exercise 5: Mocking external services]

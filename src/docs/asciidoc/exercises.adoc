@@ -1,0 +1,21 @@
+include::header.adoc[]
+
+== The exercises
+
+In this workshop, you will learn how to create functional tests for Grails 3 applications.
+
+You will test each endpoint of the Product API.
+
+=== Table of contents
+
+Do each exercise in order; each one builds on the notions learned in the previous one.
+
+link:exercises/exercise_1.html[Exercise 1: Creating a functional test suite]
+
+link:exercises/exercise_2.html[Exercise 2: Creating a first functional test]
+
+link:exercises/exercise_3.html[Exercise 3: Testing the show]
+
+link:exercises/exercise_4.html[Exercise 4: Side effects]
+
+link:exercises/exercise_5.html[Exercise 5: Mocking external services]

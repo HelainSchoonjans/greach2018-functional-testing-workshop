@@ -1,0 +1,89 @@
+include::../header.adoc[]
+
+== Creating a functional test suite
+
+=== Generating the test suite
+Creating a functional test suite is easy. Since functional tests are Grails integration tests, it is possible to use the same command to create the test suite: `grails create-integration-test ExampleFunc`. Usually you will add 'Func' or 'Functional' in the name of the test, to differentiate it from regular integration tests.
+
+Such command will generate a basic test suite in src/integration-test/groovy. The generated file will look like this:
+
+[source,groovy]
+----
+import grails.testing.mixin.integration.Integration
+import spock.lang.Specification
+
+@Integration // <1>
+class ExampleFuncSpec extends Specification { // <2>
+
+    def setup() {
+    }
+
+    def cleanup() {
+    }
+
+    void "test something"() {
+        expect:"fix me"
+            true == false
+    }
+
+}
+----
+<1> The integration annotation makes the test run with a Grails environment.
+<2> Since we are using the Spock test framework, we need to extend the Specification class.
+
+=== Setup for functional testing
+
+Since we are testing a REST API, we need a RestClient to reach the endpoints. For this we will need to add the following fields in the test suite:
+
+[source,groovy]
+----
+    @Value('${local.server.port}') // <1>
+    Integer port
+
+    @Shared  // <2>
+    RestBuilder restBuilder = new RestBuilder() // <3>
+
+    String getBaseUrl() { // <4>
+        "http://localhost:${port}"
+    }
+----
+<1> The `@Value` annotation automatically injects the configuration value, here the port of the running Grails instance, in the annotated variable. It's useful since Grails is running in a random port in tests!
+<2> With the `@Shared` annotation, we make possible the reuse of the variable across tests.
+<3> The restBuilder variable contains a RestBuilder instance. We will use this client in the tests to reach the server API, to test the functioning of the API.
+<4> This getter method serves to access the url of the running Grails instance. We can use `baseUrl` instead of 'getBaseUrl()' to obtain this value as Groovy provides syntactic sugar for accessing variables through getters.
+
+You will also need to add the following imports in top of the file:
+
+[source,groovy]
+----
+import grails.plugins.rest.client.RestBuilder
+import org.springframework.beans.factory.annotation.Value
+import spock.lang.Shared
+----
+
+And change as follow the cleanup method to ensure products are destroyed from test to test:
+
+[source, groovy]
+----
+    def cleanup() {
+        Product.withNewSession {
+            Product.list()*.delete(flush: true)
+        }
+    }
+----
+
+=== Running the tests
+
+You can run this test using the `gradle integrationTest` task. In IntelliJ IDEA the gradle command can be accessed by clicking the Gradle tab on the right of your screen.
+
+Run the test using the gradle task. The test will fail, as Grails creates a failing test as the first test.
+
+== Exercise 1
+
+. Generate a ProductFunctionalSpec test suite using the grails `create-integration-test`.
+. Modify it as described earlier to add a RESTClient.
+. Run the tests with the gradle task `integrationTest`. The tests should fail, as the default test is expecting true to be false.
+
+=== Solution
+
+link:exercise_2.html[Exercise 2: Creating a first functional test]

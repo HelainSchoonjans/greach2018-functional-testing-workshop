@@ -1,0 +1,111 @@
+include::../header.adoc[]
+
+== Creating a first functional test
+
+REST functional tests usually do the following steps:
+
+1. Initializing the database content for the test
+2. Calling the API using a REST client.
+3. Asserting that the response contains the information we expect:
+    - Status code
+    - JSON content if any
+4. Checking that the side effects we expected occured:
+    - Database changes
+    - Events
+    - Call to external services
+    - ...
+
+REST functional tests usually make some initializations in the database first, use a REST client to call the API and then ensure that the response status code has the value we expect, the response contains the information we are waiting for and the database content has been updated if needed.
+
+=== Anatomy of a functional test
+
+The test suite we defined is extending the Spock testing framework. We will review here quickly how Spock tests are structured and how to use a rest client in it.
+
+[source,groovy]
+----
+    def "It can get an existing potato"() { // <1>
+        given: 'a potato' // <2>
+        def potatoName = "some potato" <3>
+        Potato.withNewSession { // <4>
+            new Potato(name: potatoName).save(flush: true, failOnError: true)
+        }
+
+        expect: 'the potato exists' // <5>
+        Potato.withNewSession { // <6>
+            Potato.findByName(potatoName)
+        }
+
+        when: 'getting the potato from the api' // <7>
+        def response = restBuilder.get baseUrl + '/potatoes' // <8>
+
+        then: 'it returns a OK status code'
+        response.status == 200 // <9>
+
+        and: 'the json response contains only one potato'
+        def potatoes = response.json // <10>
+        potatoes.size() == 1 // <11>
+
+        and: 'the name property of the only potato is the name we defined earlier'
+        def potato = potatoes.first()
+        potato.name == potatoName
+
+        and: 'the potato still exists'
+        Potato.withNewSession { // <12>
+            Potato.findByName(potatoName)
+        }
+    }
+----
+<1> We can use def as return type as we don't care about the return value. The test name is given as a string describing the test.
+<2> In the given block, we can initialize variables, save new domains in the database and make other setup for this test.
+<3> We initialize a new variable
+<4> We open a new session to save a new domain in the database.
+<5> In an expect block, any expression that evaluates to `false` will cause the test to fail. Using expect blocks we don't need to explicitly write assertions!
+<6> We retrieve the potato we created earlier from the database. Should it not exist, the findBy method would return null. Since null evaluates to false, it would cause the test to fail since we are in an expect block. Hopefully, we created this potato earlier in the test.
+<7> The `when` block is always followed by a `then` block. The when block should contain the operation under test, while the then block should contain our assertions about the operation or it's results.
+<8> A call is made to the API using the API using a restBuilder and the response is saved in a new variable
+<9> We test that the response code is the expected one.
+<10> We get the json content of the response. It is either a `Map` or a `List`.
+<11> We assert that there is only one element in the list, as we did only create one domain instance.
+<12> We retrieve again the domain from the database, just to ensure that our rest call did not have side effects on the instance.
+
+Usually, tests will be shorter as we don't use a much Spock blocks.
+
+== Exercise 2
+
+In this exercise, you will make a test that will initialize some Products in the database, then retrieve them through a REST call in a test of the GET /products endpoint.
+
+- Remove the default test as it is always failing.
+- Create a test using the following template:
+
+[source,groovy]
+----
+    def "It can get existing products"() {
+        given: 'two products'
+        Product.withNewSession {
+            new Product(name: 'product1', price: 10).save(flush: true, failOnError: true)
+            new Product(name: 'product2', price: 20).save(flush: true, failOnError: true)
+        }
+
+        when: 'getting the products from the api'
+        def response = restBuilder.get baseUrl + '/products'
+
+        then: 'it returns a OK status code'
+        false // TODO expression evaluating to true if the response status is 200, to false otherwise
+
+        and: 'the json response contains two products'
+        false // TODO store the json of the response in a variable
+        false // TODO expression that will evaluate to true only if there is two elements in the response contents
+
+        and: 'one of the elements is named product1 and has a price of 10'
+        false // TODO expression evaluating to true only if there is an element of the response content with name attribute 'product1' and price 10
+
+        and: 'one of the elements is named product1 and has a price of 20'
+        false // TODO expression evaluating to true only if there is an element of the response content with name attribute 'product2' and price 20
+    }
+----
+
+- Replace the `false` next to the TODOs according to the instructions, to make the test pass.
+- Make a second test inspired from the one you just did, where you ensure that no results are returned when there is no Product in database. Since you want the database to be empty, you don't need the `given:` block.
+
+
+link:exercise_3.html[Exercise 3: Testing the show]

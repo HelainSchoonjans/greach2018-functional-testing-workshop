@@ -1,0 +1,43 @@
+include::../header.adoc[]
+
+== Testing the show
+
+In the previous exercise, we used the GET HTTP method on the '/products' url resulting in a listing of the existing products.
+
+If we want to get only a single product from the API, we would use the '/products/:productId' endpoint instead.
+
+== Exercise 3
+
+Copy and fill the following two tests in you test suite, to test the /products/:productId endpoint.
+
+[source,groovy]
+----
+    def "It can get an existing product"() {
+        given: 'a product'
+        def product = new Product(name: 'product', price: 10)
+        Product.withNewSession {
+            product.save(flush: true, failOnError: true)
+        }
+
+        when: 'getting the product from the api'
+        def response = restBuilder.get baseUrl + "/products/${product.id}"
+
+        then: 'it returns a OK status code'
+        false // TODO expression evaluating to true if the response status is 200, to false otherwise
+
+        and: 'the json response contains the product information'
+        false // TODO store the json of the response in a variable
+        false // TODO expression that will evaluate to true only if the attribute 'name' of the json is 'product'
+        false // TODO expression that will evaluate to true only if the attribute 'price' of the json is 10
+    }
+
+    def "It can't get a non-existing product"() {
+        when: 'getting the product from the api'
+        def response = restBuilder.get baseUrl + "/products/1234"
+
+        then: 'it doesn\'t return a OK status code'
+        false // TODO expression evaluating to true if the response status is 404, to false otherwise
+    }
+----
+
+link:exercise_4.html[Exercise 3: Side effects]

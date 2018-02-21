@@ -1,0 +1,37 @@
+include::../header.adoc[]
+
+== Mocking external services
+
+While we would want to test our API as a black box, sometimes it will be easier to mock the external services your platform relies upon. It makes possible the isolation of your micro-service from the rest of the infrastructure when testing but your test won't be a real functional test anymore.
+
+A way to do that is to use Spock mocks, inserting them instead of the bean that interacts with external services.
+
+Example:
+
+[source,groovy]
+----
+    def "It send a mail when a potato is created"() {
+        given:
+        def mailServiceMock = Mock(MailService)
+        potatoService.mailService = mailServiceMock // <1>
+
+        when:
+        def response = restBuilder.post baseUrl + '/potatoes', {
+            json([:])
+        }
+
+        then: // <2>
+        1 * mailServiceMock.send(_)
+
+        and:
+        response.status == 201
+    }
+----
+<1> We replace the mailService attribute of the potatoService by a mock, to ensure that the real MailService is not called. We don't want to send mails each time we run the tests!
+<2> We ensure that the send method of our mock is called at least once.
+
+== Exercise 5
+
+Using the GET method on the /notification endpoint make SideEffectService send a mail by calling a method of the MailService.
+
+Make a test that will mock the mailService property of the NotificationService. First make a test without mock and ensure that it fails. Then mock the service and make it pass.
