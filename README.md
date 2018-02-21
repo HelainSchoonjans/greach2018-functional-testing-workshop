@@ -4,7 +4,7 @@
 
 - in intellij idea: File \> New \> Project from version controler \> Git
 
-    - Repository url: 'git@github.com:HelainSchoonjans/greach2018-functional-testing-grails.git'
+    - Repository url: 'git@github.com:HelainSchoonjans/greach2018-functional-testing-workshop.git'
 
 ### Cloning the project
 
@@ -12,7 +12,7 @@ If you don't want to create the project through intellij idea, you can clone the
 
 - clone the repository
 
-    git clone git@github.com:HelainSchoonjans/greach2018-functional-testing-grails.git
+    git clone git@github.com:HelainSchoonjans/greach2018-functional-testing-workshop.git
     
 - import in intellij idea: File \> New \> Project from existing sources
 
