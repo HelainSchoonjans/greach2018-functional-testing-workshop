@@ -2,12 +2,92 @@ include::../header.adoc[]
 
 == Testing a secured API
 
-Most of real world applications will implement some kind of security.
+Most of real world applications will implement some kind of security. User log in with a username and password using a login endpoint, and get a token from this request. The token can be sent in a header during future calls to the api to authenticate the user.
+
+The default login endpoint in the current application is the following one:
+
+=== Login
+
+[cols="h,5a"]
+|===
+| URL
+| /api/login
+
+| Method
+| POST
+
+| Status
+| 201
+
+| Request Body
+| include::../snippets/security/save.json.adoc[]
+
+| Response Body
+| include::../snippets/security/save_response.json.adoc[]
+|===
+
+When a user calls it with the right username and password, the endpoints returns in the response an access token that can be used to authenticate him in further call to the api.
 
 Secured endpoints can be tested like any other ones, but will require additional setup to create the users, roles and obtain a session token to provide to our rest client.
 
+=== Creating users
 
-TODO continue
+You can create some users either in the `setup()` method of the test suite or in the `given:` block of your test.
+
+Example:
+
+[source,groovy]
+----
+def setup() {
+    def role1 = new Authority(authority:"ROLE_POTATO_MANAGER").save flush:true <1>
+    def user1 = new User(username: username, password: password).save flush:true <2>
+    UserAuthority.create(user1,role1).save(flush: true) <3>
+}
+----
+<1> A new role 'ROLE_POTATO_MANAGER' is created in the database
+<2> A user is created.
+<3> The user is given the role 'ROLE_POTATO_MANAGER'
+
+
+Or:
+[source,groovy]
+----
+def "It tests something"() {
+    given:
+    def role1 = new Authority(authority:"ROLE_POTATO_MANAGER").save flush:true
+    def user1 = new User(username: username, password: password).save flush:true
+    UserAuthority.create(user1,role1).save(flush: true)
+}
+----
+
+=== Logging in
+
+You can log in and get back the session token with a REST client by calling the login endpoint with the credentials you gave to the user when creating him:
+
+[source,groovy]
+----
+def loginResponse = restBuilder.post baseUrl + '/api/login', {
+    json([
+            username: username,
+            password: password
+    ])
+}
+String accessToken = loginResponse.json.access_token
+----
+
+You can do this in the `given:` block of your test.
+
+=== Passing the token
+
+When calling a secured endpoint, you should pass the retrieved token in a 'X-Auth-Token' header. To do this with the Grails RestBuilder:
+
+[source,groovy]
+----
+def response = restBuilder.get baseUrl + '/potatoes', {
+    header 'X-Auth-Token', accessToken <1>
+}
+----
+<1> A header of name 'X-Auth-Token' is given the value of the String variable accessToken.
 
 == The secured product API
 
@@ -100,3 +180,12 @@ It works as the regular products API:
 
 == Exercise 6
 
+- Copy the ProductsControllerFuncSpec test suite in a file name SecuredProductsControllerFuncSpec
+- Replace all the references to /products by /secured/products in the urls.
+- Run the test. They will fail, you try to access secured endpoints without providing a valid token.
+- Make an additional test for the index endpoint ( GET /secured/products ). Ensure the status code returned is
+403 ( FORBIDDEN ).
+- Make a similar test, where you ensure that the endpoints returns a 401 ( UNAUTHORIZED ) when a wrong token is given in the 'X-Auth-Token' header.
+- Create a user 'test' with the role 'ROLE_USER' in the `setup()` method of your test suite.
+- In each of the failing methods, add to the `given:` block some code to get a new token for the user 'test' then pass this token to the failing REST calls.
+- Run the tests and adapt them until they all pass.
