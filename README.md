@@ -6,7 +6,7 @@
 
     - Repository url: 'git@github.com:HelainSchoonjans/greach2018-functional-testing-workshop.git'
 
-### Cloning the project
+### [ALTERNATIVE] Cloning the project
 
 If you don't want to create the project through intellij idea, you can clone the project through git:
 
@@ -15,6 +15,18 @@ If you don't want to create the project through intellij idea, you can clone the
     git clone git@github.com:HelainSchoonjans/greach2018-functional-testing-workshop.git
     
 - import in intellij idea: File \> New \> Project from existing sources
+
+### Import as Gradle project
+
+Please import the project as a Gradle project. 
+
+### Java SDK
+
+Choose java 8 as the SDK. Ensure you also have a version of groovy installed.
+
+### Donwload the dependencies and created the instructions
+
+Run `gradle build` and `gradle asciidoctor`
 
 ## Opening the instructions
 
