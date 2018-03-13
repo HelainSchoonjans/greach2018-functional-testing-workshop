@@ -36,4 +36,4 @@ Using the GET method on the /notification endpoint make SideEffectService send a
 
 Make a test that will mock the mailService property of the NotificationService. First make a test without mock and ensure that it fails. Then mock the service and make it pass.
 
-link:exercise_5.html[Exercise 6: Testing a secured API]
+link:exercise_6.html[Exercise 6: Testing a secured API]
