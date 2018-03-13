@@ -19,3 +19,5 @@ link:exercises/exercise_3.html[Exercise 3: Testing the show]
 link:exercises/exercise_4.html[Exercise 4: Side effects]
 
 link:exercises/exercise_5.html[Exercise 5: Mocking external services]
+
+link:exercises/exercise_6.html[Exercise 6: Testing a secured API]
