@@ -1,0 +1,9 @@
+include::../header.adoc[]
+
+//TODO HSC: links to this page
+// TODO HSC: moving methods (rest client methods, domain generation methods...) and fields in traits
+// TODO HSC: other tricks for integration/functional testing...
+
+== Advanced tricks
+
+== Exercise 7
