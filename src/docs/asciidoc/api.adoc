@@ -87,7 +87,7 @@ Products can be read, created, updated and deleted by any user. A product ID is 
 | DELETE
 
 | Status
-| 201
+| 204
 |===
 
 === Notification
