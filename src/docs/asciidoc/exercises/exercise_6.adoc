@@ -181,8 +181,8 @@ It works as the regular products API:
 == Exercise 6
 
 - Copy the ProductsControllerFuncSpec test suite in a file name SecuredProductsControllerFuncSpec
-- Replace all the references to /products by /secured/products in the urls.
-- Run the test. They will fail, you try to access secured endpoints without providing a valid token.
+- Replace all the references to /products by /secured/products in the urls of in the SecuredProductsControllerFuncSpec file.
+- Run the tests. They will fail, you try to access secured endpoints without providing a valid token.
 - Make an additional test for the index endpoint ( GET /secured/products ). Ensure the status code returned is
 403 ( FORBIDDEN ).
 - Make a similar test, where you ensure that the endpoints returns a 401 ( UNAUTHORIZED ) when a wrong token is given in the 'X-Auth-Token' header.
