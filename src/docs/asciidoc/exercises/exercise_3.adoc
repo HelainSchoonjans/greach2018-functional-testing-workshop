@@ -40,6 +40,6 @@ Copy the following two tests in you test suite, to test the /products/:productId
     }
 ----
 
-These tests are failing since they contain `false` expressions in the `then` block. Make it succeed by replacing the 'false' by expressions like hinted by the TODOs.
+These tests are failing since they contain `false` expressions in the `then` block. Make them succeed by replacing the 'false' by expressions like hinted by the TODOs.
 
 link:exercise_4.html[Exercise 3: Side effects]
