@@ -20,15 +20,15 @@ Example:
             json([:])
         }
 
-        then: // <2>
-        1 * mailServiceMock.send(_)
+        then:
+        1 * mailServiceMock.send(_) // <2>
 
         and:
         response.status == 201
     }
 ----
 <1> We replace the mailService attribute of the potatoService by a mock, to ensure that the real MailService is not called. We don't want to send mails each time we run the tests!
-<2> We ensure that the send method of our mock is called at least once.
+<2> The `1 *` means that the following method of our mock should be called exactly once. The underscore argument of the method means that any argument is accepted as the argument of the method. A method without arguments does not need the underscore.
 
 == Exercise 5
 
