@@ -12,7 +12,7 @@ Example:
 ----
     def "It can create a potato"() {
         expect: 'no potato in database'
-        Product.withNewSession {
+        Potato.withNewSession {
             Potato.list()
         }
 
