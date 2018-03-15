@@ -13,7 +13,7 @@ Example:
     def "It can create a potato"() {
         expect: 'no potato in database'
         Potato.withNewSession {
-            Potato.list()
+            !Potato.list()
         }
 
         when: 'creates a potato using the API'
