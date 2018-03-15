@@ -8,7 +8,7 @@ If we want to get only a single product from the API, we would use the '/product
 
 == Exercise 3
 
-Copy and fill the following two tests in you test suite, to test the /products/:productId endpoint.
+Copy the following two tests in you test suite, to test the /products/:productId endpoint.
 
 [source,groovy]
 ----
@@ -39,5 +39,7 @@ Copy and fill the following two tests in you test suite, to test the /products/:
         false // TODO expression evaluating to true if the response status is 404, to false otherwise
     }
 ----
+
+These tests are failing since they contain `false` expressions in the `then` block. Make it succeed by replacing the 'false' by expressions like hinted by the TODOs.
 
 link:exercise_4.html[Exercise 3: Side effects]
