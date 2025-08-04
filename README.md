@@ -2,7 +2,7 @@
 
 ## Creating the project
 
-- in intellij idea: File \> New \> Project from version controler \> Git
+- in intellij idea: File \> New \> Project from version controller \> Git
 
     - Repository url: 'git@github.com:HelainSchoonjans/greach2018-functional-testing-workshop.git'
 
@@ -24,7 +24,7 @@ Please import the project as a Gradle project.
 
 Choose java 8 as the SDK. Ensure you also have a version of groovy installed.
 
-### Donwload the dependencies and created the instructions
+### Download the dependencies and created the instructions
 
 Run `gradle build` and `gradle asciidoctor`
 
